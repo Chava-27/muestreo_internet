@@ -39,7 +39,7 @@ echo        SISTEMA LISTO - INICIANDO APLICACION
 echo ========================================================
 echo.
 
-:: Ejecutar script principal de Python
+:: Ejecutar script principal de Python desde la raíz
 python main.py
 
 echo.
