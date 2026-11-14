@@ -1,0 +1,12 @@
+# Python bytecode y cachés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+
+# Resultados del dataset local (opcional si deseas mantenerlos fuera del control de cambios)
+salidas/*.csv
