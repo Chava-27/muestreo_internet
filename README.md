@@ -53,7 +53,7 @@ muestreo_internet/
 ├── .gitignore                     # Exclusiones de control de versiones Git
 ├── .gitattributes                 # Normalización multiplataforma de saltos de línea (LF/CRLF)
 └── README.md                      # Documentación técnica oficial
-
+```
 
 
 📊 Estructura del Dataset (17 Variables Analíticas)Cada muestra capturada inserta una fila estructurada en el archivo salidas/resultado.csv conteniendo las siguientes columnas:
