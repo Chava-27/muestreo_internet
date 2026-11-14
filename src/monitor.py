@@ -1,7 +1,9 @@
 """
 Módulo orquestador de la lógica de negocio para el monitoreo continuo de red.
+Incluye efectos visuales de carga en consola y gestión de flujos.
 """
 
+import sys
 import time
 from datetime import datetime
 from typing import Optional, Tuple
@@ -21,7 +23,7 @@ from src.storage_service import StorageService
 class NetworkMonitor:
     """
     Orquesta la configuración de usuario, ejecución periódica de pruebas
-    y almacenamiento de telemetría.
+    y almacenamiento de telemetría con una interfaz de consola dinámica.
     """
 
     def __init__(self) -> None:
@@ -29,17 +31,15 @@ class NetworkMonitor:
         self.ssid_objetivo: str = "Red Activa Dinámica"
 
     def configurar_modo(self) -> None:
-        """
-        Despliega el menú interactivo en consola para seleccionar el modo de monitoreo.
-        """
-        print("========================================")
-        print("   SISTEMA AVANZADO DE MUESTREO DE RED  ")
-        print("========================================")
-        print("1. Modo Automático (Red conectada actual)")
-        print("2. Modo Manual (Fijar red objetivo)")
-        print("----------------------------------------")
+        """Despliega el menú interactivo en consola para seleccionar el modo de monitoreo."""
+        print("========================================================")
+        print("           SISTEMA DE TELEMETRÍA DE RED v2.1            ")
+        print("========================================================")
+        print(" [1] Modo Automático (Red conectada actual)")
+        print(" [2] Modo Manual    (Fijar red objetivo)")
+        print("--------------------------------------------------------")
 
-        opcion = input("Selecciona una opción [1/2]: ").strip()
+        opcion = input(" Selecciona una opción [1/2]: ").strip()
 
         if opcion == "2":
             self._configurar_modo_manual()
@@ -51,9 +51,9 @@ class NetworkMonitor:
         """Solicita al usuario el nombre de la red objetivo para el modo manual."""
         print("\n--- Configuración Modo Manual ---")
         red_actual, _, _ = NetworkService.obtener_info_wi_fi()
-        print(f"Red detectada actualmente: {red_actual}")
+        print(f" Red detectada actualmente: {red_actual}")
         red_manual = input(
-            "Ingresa el nombre exacto de la red a monitorear (o ENTER para usar la actual): "
+            " Ingresa el nombre exacto de la red a monitorear (o ENTER para usar la actual): "
         ).strip()
 
         self.modo = "Manual"
@@ -61,34 +61,38 @@ class NetworkMonitor:
 
     @staticmethod
     def _evaluar_estado_conexion(ping_ms: float, bajada_mbps: float) -> Tuple[str, str]:
-        """
-        Diagnostica la estabilidad de la conexión en base a umbrales configurados.
-
-        Args:
-            ping_ms: Latencia medida en milisegundos.
-            bajada_mbps: Velocidad de descarga medida en Mbps.
-
-        Returns:
-            Tuple[str, str]: (estado_conexion, observaciones).
-        """
+        """Diagnostica la estabilidad de la conexión en base a umbrales configurados."""
         if bajada_mbps == 0:
             return "Caída detectada", "Sin flujo de descarga"
         if ping_ms > UMBRAL_PING_INESTABLE_MS or bajada_mbps < UMBRAL_BAJADA_MINIMA_MBPS:
             return "Inestable", "Latencia elevada o velocidad baja"
         return "Estable", "Operación normal"
 
+    @staticmethod
+    def _animar_carga(mensaje: str, duracion_segundos: float = 1.5) -> None:
+        """
+        Muestra una animación fluida de puntos suspensivos en la misma línea de consola.
+        """
+        fases = [".    ", ". .  ", ". . .", "     "]
+        inicio = time.time()
+        idx = 0
+        while time.time() - inicio < duracion_segundos:
+            sys.stdout.write(f"\r {mensaje} {fases[idx % len(fases)]}")
+            sys.stdout.flush()
+            time.sleep(0.3)
+            idx += 1
+        # Limpiar la línea al terminar
+        sys.stdout.write("\r" + " " * (len(mensaje) + 10) + "\r")
+        sys.stdout.flush()
+
     def capturar_muestra(self, id_muestra: int) -> Optional[MuestraRed]:
-        """
-        Ejecuta un ciclo completo de medición y construye el objeto MuestraRed.
-
-        Args:
-            id_muestra: Identificador secuencial asignado a esta captura.
-
-        Returns:
-            Optional[MuestraRed]: Instancia con los datos recolectados o None si falla la red.
-        """
+        """Ejecuta un ciclo completo de medición y construye el objeto MuestraRed con animación."""
         inicio_medicion = time.time()
         timestamp_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Animación visual de toma de muestra
+        self._animar_carga(f"Tomando muestra #{id_muestra}", duracion_segundos=1.2)
+
         ssid_actual, calidad_senal, tipo_conexion = NetworkService.obtener_info_wi_fi()
 
         try:
@@ -119,60 +123,55 @@ class NetworkMonitor:
                 observaciones=observaciones,
             )
         except Exception as error:
-            print(f"[Error] Falló la prueba de velocidad en ID #{id_muestra}: {error}")
+            sys.stdout.write(f"\r[Error] Falló la prueba de velocidad en ID #{id_muestra}: {error}\n")
             return None
 
     @staticmethod
-    def _imprimir_resumen_muestra(muestra: MuestraRed) -> None:
-        """Muestra en consola un resumen legible de la muestra recién almacenada."""
-        print(
-            f"  -> ISP: {muestra.proveedor_servicio} | "
-            f"Red: {muestra.ssid_actual} ({muestra.calidad_senal_porcentaje}% señal)"
-        )
-        print(
-            f"  -> Bajada: {muestra.velocidad_bajada_mbps} Mbps | "
-            f"Subida: {muestra.velocidad_subida_mbps} Mbps | Ping: {muestra.ping_ms} ms"
-        )
-        print(f"  -> Estado: [{muestra.estado_conexion}]\n")
+    def _imprimir_resumen_limpio(muestra: MuestraRed) -> None:
+        """Muestra en consola un formato limpio, moderno y estético de cada muestra registrada."""
+        hora_actual = datetime.now().strftime("%H:%M:%S")
+        print(f"[{hora_actual}] ✓ Muestra #{muestra.id_muestra} registrada exitosamente:")
+        print(f"   ├── Red / ISP     : {muestra.ssid_actual} ({muestra.proveedor_servicio}) - Señal: {muestra.calidad_senal_porcentaje}%")
+        print(f"   ├── Velocidades   : ↓ {muestra.velocidad_bajada_mbps} Mbps  |  ↑ {muestra.velocidad_subida_mbps} Mbps  |  Prom: {muestra.velocidad_promedio_mbps} Mbps")
+        print(f"   └── Estado y Ping : Latencia: {muestra.ping_ms} ms  |  Estado: [{muestra.estado_conexion}]\n")
 
-    @staticmethod
-    def _esperar_siguiente_ciclo(inicio_ciclo: float) -> None:
-        """Calcula y ejecuta la pausa necesaria para respetar el intervalo configurado."""
+    def _esperar_siguiente_ciclo(self, inicio_ciclo: float) -> None:
+        """Gestiona la pausa con una barra de progreso o conteo limpio hacia el siguiente ciclo."""
         tiempo_transcurrido = time.time() - inicio_ciclo
         tiempo_restante = INTERVALO_SEGUNDOS - tiempo_transcurrido
 
         if tiempo_restante > 0:
-            time.sleep(tiempo_restante)
+            for i in range(int(tiempo_restante), 0, -1):
+                sys.stdout.write(f"\r Siguiente sondeo en {i} segundos... ")
+                sys.stdout.flush()
+                time.sleep(1)
+            sys.stdout.write("\r" + " " * 40 + "\r") # Limpiar línea de espera
         else:
-            print(
-                f"[Aviso] La prueba excedió los {INTERVALO_SEGUNDOS}s "
-                f"({round(tiempo_transcurrido, 2)}s). Reiniciando ciclo...\n"
-            )
+            print(f"[Aviso] El ciclo superó el intervalo de {INTERVALO_SEGUNDOS}s. Reiniciando de inmediato.\n")
 
     def iniciar(self) -> None:
-        """Arranca el bucle continuo de muestreo hasta recibir interrupción manual."""
+        """Arranca el bucle continuo de muestreo con interfaz optimizada."""
         self.configurar_modo()
         StorageService.inicializar_entorno()
 
-        print(f"\n[INFO] Iniciando muestreo en MODO: {self.modo.upper()}")
-        print(f"[INFO] Red objetivo / Contexto: {self.ssid_objetivo}")
-        print(f"[INFO] Dataset de salida: {OUTPUT_FILE}")
-        print(f"[INFO] Intervalo configurado: Cada {INTERVALO_SEGUNDOS} segundos")
-        print("[!] Presiona CTRL + C en cualquier momento para detener de forma segura.\n")
+        print(f"\n[INFO] Modo activo     : {self.modo.upper()}")
+        print(f"[INFO] Red objetivo    : {self.ssid_objetivo}")
+        print(f"[INFO] Dataset destino : {OUTPUT_FILE}")
+        print(f"[INFO] Frecuencia      : Cada {INTERVALO_SEGUNDOS} segundos")
+        print("--------------------------------------------------------")
+        print(" [!] Presiona CTRL + C en cualquier momento para detener.\n")
 
         try:
             while True:
                 inicio_ciclo = time.time()
                 id_actual = StorageService.obtener_siguiente_id()
-                hora_corta = datetime.now().strftime("%H:%M:%S")
-                print(f"[{hora_corta}] Tomando muestra #{id_actual}...")
 
                 muestra = self.capturar_muestra(id_actual)
                 if muestra:
                     StorageService.guardar_muestra(muestra)
-                    self._imprimir_resumen_muestra(muestra)
+                    self._imprimir_resumen_limpio(muestra)
 
                 self._esperar_siguiente_ciclo(inicio_ciclo)
 
         except KeyboardInterrupt:
-            print("\n\n[!] Monitoreo detenido por el usuario. Dataset consolidado y guardado con éxito.")
+            print("\n\n[!] Monitoreo detenido por el usuario. Dataset guardado de forma segura.")

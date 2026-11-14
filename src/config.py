@@ -13,7 +13,7 @@ OUTPUT_DIR: str = os.path.join(BASE_DIR, "salidas")
 OUTPUT_FILE: str = os.path.join(OUTPUT_DIR, "resultado.csv")
 
 # Parámetros de muestreo
-INTERVALO_SEGUNDOS: int = 10
+INTERVALO_SEGUNDOS: int = 5
 FACTOR_ESTIMACION_JITTER: float = 0.12
 
 # Umbrales heurísticos de calidad de red
