@@ -1,62 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="100%" role="img" aria-label="MuestreoInternet v3.0 — monitoreo continuo de red con exportación a CSV">
   <defs>
-    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0d1117" />
-      <stop offset="50%" stop-color="#161b22" />
-      <stop offset="100%" stop-color="#091926" />
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0f14"/>
+      <stop offset="1" stop-color="#101820"/>
     </linearGradient>
-
-    <linearGradient id="accent-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00d2ff" />
-      <stop offset="100%" stop-color="#3a7bd5" />
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2dd4bf" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
     </linearGradient>
-
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+    <pattern id="rejilla" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
     </pattern>
+    <clipPath id="marco"><rect width="1200" height="320" rx="14"/></clipPath>
   </defs>
 
-  <!-- Fondo base y cuadrícula -->
-  <rect width="1200" height="300" rx="12" fill="url(#bg-grad)" />
-  <rect width="1200" height="300" rx="12" fill="url(#grid)" />
+  <g clip-path="url(#marco)">
+    <rect width="1200" height="320" fill="url(#fondo)"/>
+    <rect x="640" width="560" height="320" fill="url(#rejilla)"/>
 
-  <!-- Borde sutil -->
-  <rect x="2" y="2" width="1196" height="296" rx="10" fill="none" stroke="#30363d" stroke-width="2" />
+    <!-- Gráfica de latencia: línea base estable con un pico y una caída -->
+    <g transform="translate(640 40)">
+      <line x1="40" y1="200" x2="520" y2="200" stroke="#ffffff" stroke-opacity="0.12"/>
+      <line x1="40" y1="110" x2="520" y2="110" stroke="#f59e0b" stroke-opacity="0.35" stroke-dasharray="4 6"/>
+      <text x="520" y="102" text-anchor="end" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" fill="#f59e0b" fill-opacity="0.8">umbral 150 ms</text>
 
-  <!-- Ondas decorativas de telemetría / red a la derecha -->
-  <g opacity="0.25" stroke="url(#accent-grad)" fill="none" stroke-width="2.5">
-    <path d="M 750 220 Q 830 120, 910 180 T 1070 110 T 1200 150" />
-    <path d="M 750 245 Q 850 160, 940 205 T 1100 140 T 1200 180" stroke-opacity="0.6" />
-    <circle cx="910" cy="180" r="5" fill="#00d2ff" />
-    <circle cx="1070" cy="110" r="5" fill="#00d2ff" />
+      <path d="M40 170 L80 166 L120 172 L160 164 L200 168 L240 150 L270 92 L300 158 L340 166 L380 162 L410 166 L430 200 L450 200 L470 168 L520 164 L520 200 L40 200 Z" fill="url(#area)"/>
+      <path d="M40 170 L80 166 L120 172 L160 164 L200 168 L240 150 L270 92 L300 158 L340 166 L380 162 L410 166 L430 200 L450 200 L470 168 L520 164" fill="none" stroke="#2dd4bf" stroke-width="2.5" stroke-linejoin="round"/>
+
+      <circle cx="270" cy="92" r="5" fill="#f59e0b"/>
+      <circle cx="440" cy="200" r="5" fill="#f43f5e"/>
+      <text x="270" y="78" text-anchor="middle" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" fill="#f59e0b">Inestable</text>
+      <text x="440" y="222" text-anchor="middle" font-family="Consolas, 'Cascadia Mono', monospace" font-size="11" fill="#f43f5e">Caída</text>
+      <circle cx="520" cy="164" r="5" fill="#2dd4bf"/>
+      <circle cx="520" cy="164" r="11" fill="none" stroke="#2dd4bf" stroke-opacity="0.4"/>
+    </g>
+
+    <!-- Texto principal -->
+    <g font-family="'Segoe UI', 'Inter', system-ui, sans-serif">
+      <text x="64" y="74" font-family="Consolas, 'Cascadia Mono', monospace" font-size="13" letter-spacing="2" fill="#2dd4bf">v3.0 · PYTHON · WINDOWS</text>
+      <text x="62" y="128" font-size="52" font-weight="700" fill="#f1f5f9">MuestreoInternet</text>
+      <text x="64" y="164" font-size="19" fill="#94a3b8">Monitoreo continuo de red con exportación a CSV</text>
+    </g>
+
+    <!-- Métricas capturadas -->
+    <g font-family="Consolas, 'Cascadia Mono', monospace" font-size="13" fill="#cbd5e1">
+      <g transform="translate(64 204)">
+        <rect width="118" height="30" rx="6" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1"/>
+        <text x="59" y="20" text-anchor="middle">↓ ↑ Mbps</text>
+      </g>
+      <g transform="translate(192 204)">
+        <rect width="118" height="30" rx="6" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1"/>
+        <text x="59" y="20" text-anchor="middle">ping · jitter</text>
+      </g>
+      <g transform="translate(320 204)">
+        <rect width="118" height="30" rx="6" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1"/>
+        <text x="59" y="20" text-anchor="middle">pérdida %</text>
+      </g>
+      <g transform="translate(448 204)">
+        <rect width="118" height="30" rx="6" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1"/>
+        <text x="59" y="20" text-anchor="middle">router · DNS</text>
+      </g>
+      <g transform="translate(64 244)">
+        <rect width="118" height="30" rx="6" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1"/>
+        <text x="59" y="20" text-anchor="middle">señal Wi-Fi</text>
+      </g>
+      <g transform="translate(192 244)">
+        <rect width="118" height="30" rx="6" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1"/>
+        <text x="59" y="20" text-anchor="middle">IP · puerto</text>
+      </g>
+      <g transform="translate(320 244)">
+        <rect width="246" height="30" rx="6" fill="#2dd4bf" fill-opacity="0.1" stroke="#2dd4bf" stroke-opacity="0.45"/>
+        <text x="123" y="20" text-anchor="middle" fill="#2dd4bf">50 columnas por muestra</text>
+      </g>
+    </g>
+
+    <rect x="1" y="1" width="1198" height="318" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2"/>
   </g>
-
-  <!-- Ícono central izquierdo (Radar / Conectividad) -->
-  <g transform="translate(95, 150)">
-    <circle cx="0" cy="0" r="52" fill="#00d2ff" fill-opacity="0.08" stroke="#00d2ff" stroke-width="2" stroke-opacity="0.4" />
-    <circle cx="0" cy="0" r="36" fill="none" stroke="#00d2ff" stroke-width="2" stroke-dasharray="8 6" />
-    <!-- Barras de velocidad -->
-    <rect x="-18" y="4" width="7" height="16" rx="2" fill="#3a7bd5" />
-    <rect x="-7" y="-6" width="7" height="26" rx="2" fill="#00a8ff" />
-    <rect x="4" y="-16" width="7" height="36" rx="2" fill="#00d2ff" />
-    <rect x="15" y="-24" width="7" height="44" rx="2" fill="#5ce1e6" />
-  </g>
-
-  <!-- Título Principal -->
-  <text x="180" y="138" font-family="&#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif" font-size="46" font-weight="800" fill="#ffffff" letter-spacing="1">
-    MuestreoInternet
-  </text>
-
-  <!-- Línea de acento -->
-  <rect x="180" y="154" width="110" height="4" rx="2" fill="url(#accent-grad)" />
-
-  <!-- Subtítulo -->
-  <text x="180" y="192" font-family="&#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="400" fill="#8b949e">
-    Motor de telemetría de red y generación automatizada de datasets CSV
-  </text>
-
-  <!-- Etiqueta inferior derecha -->
-  <text x="1160" y="272" text-anchor="end" font-family="Consolas, &#39;Courier New&#39;, monospace" font-size="14" fill="#58a6ff" opacity="0.8">
-    // INTERVALO: 10s • MODO DUAL (AUTO / MANUAL)
-  </text>
 </svg>
